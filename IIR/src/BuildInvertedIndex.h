@@ -28,6 +28,6 @@ set<Term> createII(const set<string> &vocabs);
 /**
  * Receive a set of strings as vocabularies and build a inverted index data structure to store term-document relationship
  */
-set<Term> buildInvertedIndex(set<Term> &terms);
+set<Term> buildInvertedIndex(const set<Term> &terms, const vector<string> &fileList, const string &path, const vector<string> &stopwords);
 
 #endif /* BUILDINVERTEDINDEX_H_ */

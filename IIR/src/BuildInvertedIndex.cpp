@@ -24,36 +24,38 @@ set<Term> createII(const set<string> &vocabs) {
 	set<Term> result;
 
 	for (set<string>::iterator it = vocabs.begin(); it != vocabs.end(); ++it) {
-		Term t;
+		Term t(*it);
 		result.insert(t);
 	}
 
 	return result;
 }
 
-set<Term> buildInvertedIndex(set<Term> &terms) {
-	vector<string> stopwords = loadStopwords("./res/stopwords_en.txt");
-
-	string path = "./res/docs";
-	vector<string> fileList = listFile(path);
+set<Term> buildInvertedIndex(const set<Term> &terms, const vector<string> &fileList, const string &path, const vector<string> &stopwords) {
+	set<Term> result = terms;
 
 	for (unsigned int i = 0; i < fileList.size(); ++i) {
 		string filename = fileList.at(i);
-		set<string> words = loadWords(path + "/" + filename, stopwords);
+		vector<string> words = loadWords(path + "/" + filename);
+		set<string> vocabs = preprocessing(words, stopwords, " ,.-()$;:\"'&");
 
 
-		for(set<Term>::iterator it = terms.begin(); it != terms.end(); ++it) {
+		for(set<Term>::iterator it = result.begin(); it != result.end(); ++it) {
 			string str = it->getValue();
 
-			if(find(words.begin(), words.end(), str) != words.end()) {
+			if(find(vocabs.begin(), vocabs.end(), str) != vocabs.end()) {
 				const string rawName = filename.substr(0, filename.find_last_of('.'));
 				Term t = *it;
-				terms.erase(it);
-				t.addDoc(filename.substr(0, filename.find_last_of('.')));
-				terms.insert(t);
+				result.erase(it);
+
+				// Count occurrence of term in the document
+				int count = std::count(words.begin(), words.end(), t.getValue());
+
+				t.addDoc(rawName, count);
+				result.insert(t);
 			}
 		}
 	}
-	return terms;
+	return result;
 
 }

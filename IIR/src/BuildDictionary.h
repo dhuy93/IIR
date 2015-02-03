@@ -26,10 +26,10 @@ using namespace std;
 vector<string> loadStopwords(const string &filename);
 
 /**
- * Open a file and collect a set of words in that file
+ * Open a file and collect a vector of words in that file
  */
 //vector<string> loadWords(const string &filename);
-set<string> loadWords(const string &filename, const vector<string> &stopwords);
+vector<string> loadWords(const string &filename);
 
 /**
  * Save list of vocabulary to a text file
@@ -55,13 +55,13 @@ set<string> tokenize(const string &s, const string & delimiter);
 /**
  * Pre-processing: eliminate stop-words, strip unwanted characters
  */
-set<string> preprocessing(const set<string> &vocabs);
+set<string> preprocessing(const vector<string> &vocabs, const vector<string> &stopwords, const string &delimiters);
 
 /**
  * Read content of all text files in “docs” folder to collect set of words
  * that appear in at least one document. Please write list of words in a text file named
  * "dictionary.txt", where each word is put in a single line.
  */
-set<string> buildDict();
+set<string> buildDict(const vector<string> fileList, const string &path,const vector<string> &stopwords);
 
 #endif /* BUILDDICTIONARY_H_ */

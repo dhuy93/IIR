@@ -27,31 +27,33 @@ vector<string> loadStopwords(const string &filename) {
 	return stopwords;
 }
 
-set<string> loadWords(const string &filename, const vector<string> &stopwords) {
+vector<string> loadWords(const string &filename) {
 	ifstream fin;
 	fin.open(filename.c_str());
 	if (!fin.good()) {
 		cerr << "Error opening " << filename << " file to read.\n";
 		fin.close();
-		return set<string>();
+		return vector<string>();
 	}
 
 	string word;
-	set<string> result;
+	vector<string> result;
 	while (fin.good()) {
 		fin >> word;
 
 		// Pre-processing
-		string delimiters = " ,.-()$;:\"'&";
-		set<string> tokens = tokenize(word, delimiters);
+//		string delimiters = " ,.-()$;:\"'&";
+//		set<string> tokens = tokenize(word, delimiters);
+//
+//
+//		for(set<string>::iterator it = tokens.begin();it != tokens.end(); ++it) {
+//			if(find(stopwords.begin(), stopwords.end(), *it) == stopwords.end()) {
+//				// The token is not in stopwords
+//				result.insert(*it);
+//			}
+//		}
 
-
-		for(set<string>::iterator it = tokens.begin();it != tokens.end(); ++it) {
-			if(find(stopwords.begin(), stopwords.end(), *it) == stopwords.end()) {
-				// The token is not in stopwords
-				result.insert(*it);
-			}
-		}
+		result.push_back(word);
 //		result.insert(tokens.begin(), tokens.end());
 	}
 
@@ -147,24 +149,39 @@ set<string> tokenize(const string &str, const string &delimiters) {
 	return tokens;
 }
 
-//set<string> preprocessing(const set<string> &vocabs) {
-//	set<string>::iterator it;
-//	for (it = vocabs.begin(); it != vocabs.end(); ++it) {
-//		//TODO: split then remove stop words
-//
-//
-//	}
-//}
+set<string> preprocessing(const vector<string> &vocabs, const vector<string> &stopwords, const string &delimiters) {
+	set<string> result;
 
-set<string> buildDict() {
-	vector<string> stopwords = loadStopwords("./res/stopwords_en.txt");
-	string path = "./res/docs";
-	vector<string> fileList = listFile(path);
+//	vector<string>::iterator it;
+//	for (vector<string>::iterator it = vocabs.begin(); it != vocabs.end(); ++it) {
+	for (unsigned int i = 0; i < vocabs.size(); ++i) {
+//		string word = *it;
+		string word = vocabs[i];
+
+//		string delimiters = " ,.-()$;:\"'&";
+		set<string> tokens = tokenize(word, delimiters);
+
+
+		for(set<string>::iterator it2 = tokens.begin();it2 != tokens.end(); ++it2) {
+			if(find(stopwords.begin(), stopwords.end(), *it2) == stopwords.end()) {
+				// The token is not in stopwords
+				result.insert(*it2);
+			}
+		}
+
+	}
+
+	return result;
+}
+
+set<string> buildDict(const vector<string> fileList, const string &path,const vector<string> &stopwords) {
+
 	set<string> vocabsList;
 	for (unsigned int i = 0; i < fileList.size(); ++i) {
 		string filename = fileList.at(i);
-		set<string> vocabs = loadWords(path + "/" + filename, stopwords);
+		vector<string> words = loadWords(path + "/" + filename);
 //		preprocessing(vocabs);
+		set<string> vocabs = preprocessing(words, stopwords, " ,.-()$;:\"'&");
 		vocabsList.insert(vocabs.begin(), vocabs.end());
 	}
 

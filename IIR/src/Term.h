@@ -9,6 +9,7 @@
 #define TERM_H_
 #include <string>
 #include <set>
+#include <map>
 
 using namespace std;
 
@@ -16,18 +17,27 @@ class Term {
 private:
 	string value;
 	string docID;
-	set<string> docs;
+	map<string, int> docs;
 public:
 	Term();
+	Term(const string &value);
 	virtual ~Term();
 
 	// Compare operator to put this class in order in a set
 	//
 	bool operator<(const Term &b) const;
 
+	// Compare operator
+	//
+	bool operator==(const Term &b) const;
+
+	// Compare operator
+	//
+	bool operator!=(const Term &b) const;
+
 	// Get the name of all documents that this term belong to
 	//
-	set<string> getDocs();
+	map<string, int> getDocs() const;
 
 	// Get the value of the term
 	//
@@ -35,7 +45,7 @@ public:
 
 	// Add document contains this term
 	//
-	void addDoc(const string &docName);
+	void addDoc(const string &docName, const int &count);
 
 	// Get the number of documents contain this term
 	//
