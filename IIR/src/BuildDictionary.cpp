@@ -174,14 +174,14 @@ set<string> preprocessing(const vector<string> &vocabs, const vector<string> &st
 	return result;
 }
 
-set<string> buildDict(const vector<string> fileList, const string &path,const vector<string> &stopwords) {
+set<string> buildDict(const vector<string> fileList, const string &path, const vector<string> &stopwords, const string &delimiters) {
 
 	set<string> vocabsList;
 	for (unsigned int i = 0; i < fileList.size(); ++i) {
 		string filename = fileList.at(i);
 		vector<string> words = loadWords(path + "/" + filename);
 //		preprocessing(vocabs);
-		set<string> vocabs = preprocessing(words, stopwords, " ,.-()$;:\"'&");
+		set<string> vocabs = preprocessing(words, stopwords, delimiters);
 		vocabsList.insert(vocabs.begin(), vocabs.end());
 	}
 

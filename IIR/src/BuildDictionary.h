@@ -19,7 +19,6 @@
 
 using namespace std;
 
-
 /**
  * Load stop words from file
  */
@@ -55,13 +54,15 @@ set<string> tokenize(const string &s, const string & delimiter);
 /**
  * Pre-processing: eliminate stop-words, strip unwanted characters
  */
-set<string> preprocessing(const vector<string> &vocabs, const vector<string> &stopwords, const string &delimiters);
+set<string> preprocessing(const vector<string> &vocabs,
+		const vector<string> &stopwords, const string &delimiters);
 
 /**
  * Read content of all text files in “docs” folder to collect set of words
  * that appear in at least one document. Please write list of words in a text file named
  * "dictionary.txt", where each word is put in a single line.
  */
-set<string> buildDict(const vector<string> fileList, const string &path,const vector<string> &stopwords);
+set<string> buildDict(const vector<string> fileList, const string &path,
+		const vector<string> &stopwords, const string &delimiters);
 
 #endif /* BUILDDICTIONARY_H_ */

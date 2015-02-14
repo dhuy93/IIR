@@ -11,6 +11,7 @@
 #include "BuildInvertedIndex.h"
 #include "VectorSpaceModelImpl.h"
 #include <map>
+#include <time.h>
 
 using namespace std;
 
@@ -18,15 +19,10 @@ using namespace std;
 unsigned int docsCount = 0;
 vector<string> fileList;
 vector<string> stopwords;
-vector<string> docsName;
+vector<string> docsNames;
 
 int main() {
-//	string str = "The higher minimum wage signed into law Tuesday will be welcome relief for millions of workers";
-//	set<string> tokens = tokenize(str, " ,.-()$;:\"'&");
-//	for(set<string>::iterator it = tokens.begin();it!=tokens.end();++it) {
-//		cout << *it << endl;
-//	}
-//	return 0;
+	clock_t t0 = clock();
 
 	// Prepare
 	//
@@ -34,26 +30,26 @@ int main() {
 
 	// Get file list and documents' name
 	//
-	string path = "./res/docs";
+	string path = "./res/test";
 	fileList = listFile(path);
-	for (unsigned int i = 0; i < fileList.size(); ++i) {
-		string rawName = fileList[i].substr(0, fileList[i].find_last_of('.'));
-		docsName.push_back(rawName);
-	}
 
 	// Shorten the list for testing
 	//
-	fileList = vector<string>(fileList.begin(), fileList.begin() + 5);
+	//fileList = vector<string>(fileList.begin(), fileList.begin() + 5);
+	for (unsigned int i = 0; i < fileList.size(); ++i) {
+		string rawName = fileList[i].substr(0, fileList[i].find_last_of('.'));
+		docsNames.push_back(rawName);
+	}
 	docsCount = fileList.size();
 
 	// Load stopwords
 	//
 	stopwords = loadStopwords("./res/stopwords_en.txt");
 
-
 	// Build vocabularies
 	//
-	set<string> vocabs = buildDict(fileList, path, stopwords);
+	string delimiters = " ,.-()$;:\"'&";
+	set<string> vocabs = buildDict(fileList, path, stopwords, delimiters);
 
 	// Select 500 words randomly
 	//
@@ -65,31 +61,36 @@ int main() {
 	//
 	set<Term> terms = createII(selectedWords);
 	// Remove stop-words
-	set<Term> ii = buildInvertedIndex(terms, fileList, path, stopwords);
+	set<Term> ii = buildInvertedIndex(terms, fileList, path, stopwords,
+			delimiters);
+	writeII(ii, "II.txt");
 
 //	vector<int> docVect = createDocVector("2296newsML.txt", ii, docCount);
 
-
 	string query;
+	cout << "Please enter your query: \n";
 	cin >> query;
-	vector<int> queryVector = createQueryVector(query, ii, docsCount, stopwords);
 
-	ofstream fout;
-	fout.open("vector.txt");
-	if (!fout.good()) {
-		fout.close();
-		cerr << "Error opening file to write vector for document." << endl;
-		return 0;
+//	vector<int> queryVector = createQueryVector(query, ii, docsCount, stopwords);
+//	ofstream fout;
+//	fout.open("vector.txt");
+//	if (!fout.good()) {
+//		fout.close();
+//		cerr << "Error opening file to write vector for document." << endl;
+//		return 0;
+//	}
+//	for (unsigned int i = 0; i < queryVector.size(); ++i) {
+//		fout << queryVector[i] << endl;
+//	}
+//	fout.close();
+
+	vector<string> result = searchRelevanceDocs(query, ii, docsNames, docsCount,
+			stopwords, delimiters);
+	for (unsigned int i = 0; i < result.size(); ++i) {
+		cout << result[i] << endl;
 	}
 
-	for (unsigned int i = 0; i < queryVector.size(); ++i) {
-		fout << queryVector[i] << endl;
-	}
-
-	fout.close();
-
-
-
+	cout << "Time: " << (double) (clock() - t0) / CLOCKS_PER_SEC << endl;
 	cout << "Finished.\n";
 	return 0;
 }
